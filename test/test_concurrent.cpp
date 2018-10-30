@@ -35,12 +35,12 @@ public:
 
 static int test_thread_with_lamda(int argc, char *argv[]){
     Person person("mdsj");
-    std::thread tmpThread([](Person *pPerson) {
+    std::thread tmpThread([](Person &rPerson) {
         for (int i = 0; i < 3; ++i) {
-            cout << pPerson->mName << endl;
+            cout << rPerson.mName << endl;
             sleep(2);
         }
-    }, &person);
+    }, std::ref(person));
 
     cout << "waiting for finished" << endl;
     tmpThread.join();
