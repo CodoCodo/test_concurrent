@@ -25,6 +25,29 @@ static int test_thread(int argc, char *argv[]) {
     return 0;
 }
 
+
+/* 测试thread对象使用lamda表达式 */
+class Person {
+public:
+    Person(const string &name = "") : mName(name) {}
+    string mName;
+};
+
+static int test_thread_with_lamda(int argc, char *argv[]){
+    Person person("mdsj");
+    std::thread tmpThread([](Person *pPerson) {
+        for (int i = 0; i < 3; ++i) {
+            cout << pPerson->mName << endl;
+            sleep(2);
+        }
+    }, &person);
+
+    cout << "waiting for finished" << endl;
+    tmpThread.join();
+    cout << "finished" << endl;
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
-    return test_thread(argc, argv);
+    return test_thread_with_lamda(argc, argv);
 }
