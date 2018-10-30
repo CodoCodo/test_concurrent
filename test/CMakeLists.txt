@@ -1,0 +1,2 @@
+ADD_EXECUTABLE(test_concurrent test_concurrent.cpp)
+TARGET_LINK_LIBRARIES(test_concurrent pthread)
