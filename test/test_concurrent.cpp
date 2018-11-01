@@ -37,6 +37,10 @@ public:
 static int test_thread_with_lamda(int argc, char *argv[]){
     vector<thread> threadBuffers;
     Person person("mdsj");
+
+    /* 打印系统线程个数 */
+    cout << "system thread count is " << std::thread::hardware_concurrency() << endl;
+
     threadBuffers.emplace_back([](Person &rPerson) {
         for (int i = 0; i < 3; ++i) {
             cout << rPerson.mName << endl;
