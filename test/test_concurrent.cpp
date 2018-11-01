@@ -58,7 +58,7 @@ static int test_thread_with_lamda(int argc, char *argv[]){
     cout << "waiting for finished" << endl;
     for (auto &t : threadBuffers) {
         if (t.joinable()) {
-            cout << "joining" << endl;
+            cout << "joining id is " << t.get_id() << endl;
             t.join();
         }
     }
