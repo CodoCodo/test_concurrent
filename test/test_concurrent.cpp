@@ -2,6 +2,7 @@
 #include <iostream>
 #include <thread>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -34,16 +35,29 @@ public:
 };
 
 static int test_thread_with_lamda(int argc, char *argv[]){
+    vector<thread> threadBuffers;
     Person person("mdsj");
-    std::thread tmpThread([](Person &rPerson) {
+    threadBuffers.emplace_back([](Person &rPerson) {
         for (int i = 0; i < 3; ++i) {
             cout << rPerson.mName << endl;
             sleep(2);
         }
     }, std::ref(person));
 
+    thread t2([]() {
+        for (int i = 0; i < 2; ++i) {
+            cout << "thread 2" << endl;
+        }
+    });
+    threadBuffers.push_back(std::move(t2));
+
     cout << "waiting for finished" << endl;
-    tmpThread.join();
+    for (auto &t : threadBuffers) {
+        if (t.joinable()) {
+            cout << "joining" << endl;
+            t.join();
+        }
+    }
     cout << "finished" << endl;
     return 0;
 }
