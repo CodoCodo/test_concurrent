@@ -3,6 +3,7 @@
 #include <thread>
 #include <string>
 #include <vector>
+#include <functional>
 
 using namespace std;
 
@@ -32,6 +33,21 @@ class Person {
 public:
     Person(const string &name = "") : mName(name) {}
     string mName;
+};
+
+class PersonHandler {
+public:
+    PersonHandler(const string &operation)
+    :mOperation(operation){
+    }
+    void handle(const Person &person) {
+        cout << mOperation << '\t' << person.mName << endl;
+    }
+    static int helloFunc(shared_ptr<PersonHandler> pHandler, Person &person) {
+        cout << __FUNCTION__ << '\t' << person.mName << endl;
+        pHandler->handle(person);
+    }
+    string mOperation;
 };
 
 static int test_thread_with_lamda(int argc, char *argv[]){
@@ -66,6 +82,15 @@ static int test_thread_with_lamda(int argc, char *argv[]){
     return 0;
 }
 
+typedef std::function<void ()> MyFunc;
+static int test_func(int argc, char *argv[]) {
+    Person myPerson("lily");
+    shared_ptr<PersonHandler> pHandler(new PersonHandler("fire"));
+    MyFunc  myf = std::bind(PersonHandler::helloFunc, pHandler, myPerson);
+    myf();
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
-    return test_thread_with_lamda(argc, argv);
+    return test_func(argc, argv);
 }
