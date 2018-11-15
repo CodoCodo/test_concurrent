@@ -6,24 +6,32 @@
 
 using namespace std;
 
+class BackgroundTask;
 class BackgroundTask {
 public:
     BackgroundTask() 
     :mbWork(false) {}
 
-    void operator()(int sleepCnt) const {
+    void operator()() {
+        THREAD_SAFE_PRINT("before wait");
         std::unique_lock<std::mutex> lk(mMutex);
-        THREAD_SAVE_PRINT("before wait");
-        mDataCond.wait(lk, [this]{ return mbWork;})
-        THREAD_SAVE_PRINT("after wait");
+        mDataCond.wait(lk, [this]{ return mbWork;});
+        mbWork = false;
+        THREAD_SAFE_PRINT("after wait");
         lk.unlock();
     }
 
     void notify() {
         std::lock_guard<std::mutex> lk(mMutex);
-        THREAD_SAVE_PRINT("before notify");
+        THREAD_SAFE_PRINT("before notify");
+        sleep(1);
+        mbWork = true;
         mDataCond.notify_one();
-        THREAD_SAVE_PRINT("after notify");
+        THREAD_SAFE_PRINT("after notify");
+    }
+    
+    static void threadFunc(BackgroundTask &obj) {
+        obj();
     }
 
 private:
@@ -32,10 +40,12 @@ private:
     bool mbWork;
 };
 
+
+
 /* 测试condition_variable的唤醒 */
 int test_condition_wake(int argc, char *argv[]) {
     BackgroundTask bgt;
-    std::thread tmpThread(bgt);
+    std::thread tmpThread(BackgroundTask::threadFunc, std::ref(bgt));
     bgt.notify();
     tmpThread.join();
     return 0;
