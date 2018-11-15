@@ -1,0 +1,3 @@
+AUX_SOURCE_DIRECTORY(. COMMON_SRC)
+ADD_LIBRARY(concurrent_common ${COMMON_SRC})
+TARGET_LINK_LIBRARIES(concurrent_common pthread)
