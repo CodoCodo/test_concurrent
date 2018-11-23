@@ -3,6 +3,9 @@
 #include <condition_variable>
 #include "threadsafe_print.h"
 #include <thread>
+#include "blocking_queue.h"
+#include "person.h"
+#include "concurrent_common.h"
 
 using namespace std;
 
@@ -51,6 +54,29 @@ int test_condition_wake(int argc, char *argv[]) {
     return 0;
 }
 
+/* 测试阻塞队列 */
+int test_blocking_queue(int argc, char *argv[]) {
+    Person p1("caocao", "0", 40);
+    Person p2("guanyu", "1", 34);
+    Person p3(std::move(p2));
+
+
+    BlockingQueue<Person> queue;
+
+    CONCURRENT_COMMON_COUT << "testing blocking queue" << endl;
+    queue.push(Person("zhaoyun", "2", 33));
+    queue.push(std::move(p1));
+    //queue.push_back(p2);
+
+    CONCURRENT_COMMON_COUT << "before pop blocking queue" << endl;
+    
+    Person p4 = queue.pop();
+
+    CONCURRENT_COMMON_COUT << "after testing blocking queue" << endl;
+
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
-    return test_condition_wake(argc, argv);
+    return test_blocking_queue(argc, argv);
 }

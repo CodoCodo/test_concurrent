@@ -1,4 +1,4 @@
-LIST(APPEND TEST_DEP_LIBS pthread concurrent_common concurrent_util)
+LIST(APPEND TEST_DEP_LIBS pthread concurrent_common concurrent_util concurrent_debug_tools)
 
 ADD_EXECUTABLE(test_concurrent test_concurrent.cpp)
 TARGET_LINK_LIBRARIES(test_concurrent ${TEST_DEP_LIBS})
