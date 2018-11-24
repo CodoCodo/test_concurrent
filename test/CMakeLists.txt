@@ -9,3 +9,5 @@ TARGET_LINK_LIBRARIES(test_condition ${TEST_DEP_LIBS})
 ADD_EXECUTABLE(test_future test_future.cpp)
 TARGET_LINK_LIBRARIES(test_future ${TEST_DEP_LIBS})
 
+ADD_EXECUTABLE(test_time test_time.cpp)
+TARGET_LINK_LIBRARIES(test_time ${TEST_DEP_LIBS})
