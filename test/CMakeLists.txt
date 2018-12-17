@@ -11,3 +11,6 @@ TARGET_LINK_LIBRARIES(test_future ${TEST_DEP_LIBS})
 
 ADD_EXECUTABLE(test_time test_time.cpp)
 TARGET_LINK_LIBRARIES(test_time ${TEST_DEP_LIBS})
+
+ADD_EXECUTABLE(test_basic test_basic.cpp)
+TARGET_LINK_LIBRARIES(test_basic ${TEST_DEP_LIBS})

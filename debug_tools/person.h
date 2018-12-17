@@ -26,6 +26,8 @@ public:
     std::string mName;
     std::string mId;
     int mAge;
+
+    static const std::string description_;
 };
 
 #endif /* _PERSON_H */

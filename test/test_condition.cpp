@@ -6,8 +6,16 @@
 #include "blocking_queue.h"
 #include "person.h"
 #include "concurrent_common.h"
+#include <chrono>
+#include <mutex>
+#include <vector>
 
 using namespace std;
+
+class MyLock : public std::mutex {
+public:
+  int value_;
+};
 
 class BackgroundTask;
 class BackgroundTask {
@@ -18,7 +26,14 @@ public:
     void operator()() {
         THREAD_SAFE_PRINT("before wait");
         std::unique_lock<std::mutex> lk(mMutex);
-        mDataCond.wait(lk, [this]{ return mbWork;});
+#if 1
+        mDataCond.wait(lk, [this]{ 
+          cout << "testing mbWork" << endl;
+          return mbWork;
+        });
+#else
+        mDataCond.wait(lk);
+#endif
         mbWork = false;
         THREAD_SAFE_PRINT("after wait");
         lk.unlock();
@@ -27,7 +42,6 @@ public:
     void notify() {
         std::lock_guard<std::mutex> lk(mMutex);
         THREAD_SAFE_PRINT("before notify");
-        sleep(1);
         mbWork = true;
         mDataCond.notify_one();
         THREAD_SAFE_PRINT("after notify");
@@ -37,7 +51,6 @@ public:
         obj();
     }
 
-private:
     std::mutex mMutex;
     std::condition_variable mDataCond;
     bool mbWork;
@@ -49,7 +62,13 @@ private:
 int test_condition_wake(int argc, char *argv[]) {
     BackgroundTask bgt;
     std::thread tmpThread(BackgroundTask::threadFunc, std::ref(bgt));
+    sleep(1);
+    cout << "main notify" << endl;
     bgt.notify();
+    cout << "main after notify" << endl;
+    sleep(1);
+    std::lock_guard<std::mutex> lk(bgt.mMutex);
+    cout << "before join" << endl;
     tmpThread.join();
     return 0;
 }
@@ -77,6 +96,31 @@ int test_blocking_queue(int argc, char *argv[]) {
     return 0;
 }
 
+// 测试定时唤醒功能
+int TestTimerWake(int argc, char *argv[]) {
+  std::condition_variable cond_var;
+  std::mutex m;
+  auto timeout = std::chrono::milliseconds(20);
+
+  std::vector<std::chrono::milliseconds> duration_list;
+  std::unique_lock<std::mutex> lk(m);
+  auto last_time = std::chrono::steady_clock::now();
+  for (int i = 0; i < 10; ++i) {
+    if (cond_var.wait_for(lk, timeout) == std::cv_status::timeout) {
+      auto current_time = std::chrono::steady_clock::now();
+      duration_list.push_back(std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_time));
+      last_time = current_time;
+    }
+  }
+
+  std::cout << "duration_list are " << std::endl;
+  for (auto &t : duration_list) {
+    std::cout << std::chrono::duration<double, std::chrono::milliseconds>(t).count() << std::endl;
+  }
+
+  return 0;
+}
+
 int main(int argc, char *argv[]) {
-    return test_blocking_queue(argc, argv);
+    return TestTimerWake(argc, argv);
 }

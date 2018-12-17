@@ -33,6 +33,8 @@ Person::Person(const std::string &name, const std::string &id, const int age)
     CONCURRENT_COMMON_COUT << "带参数构造函数" << endl;   
 }
 
+const std::string Person::description_ = "person class";
+
 /* 复制构造函数 */
 Person::Person(const Person &obj){
     CONCURRENT_COMMON_COUT << "复制构造函数" << endl;   
