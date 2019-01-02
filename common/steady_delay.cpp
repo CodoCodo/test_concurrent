@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <sys/select.h>
 #include "steady_delay.h"
+#include <errno.h>
 
 int SteadyDelay::DelayWithSelect(int64_t milliseconds){
   struct timeval tv;

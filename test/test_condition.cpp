@@ -96,6 +96,7 @@ int test_blocking_queue(int argc, char *argv[]) {
     return 0;
 }
 
+#if 0
 // 测试定时唤醒功能
 int TestTimerWake(int argc, char *argv[]) {
   std::condition_variable cond_var;
@@ -120,7 +121,55 @@ int TestTimerWake(int argc, char *argv[]) {
 
   return 0;
 }
+#endif 
+
+//测试二次notify的效果
+class TestDoubleNotify {
+ public:
+  TestDoubleNotify()
+    :thread_b_(&TestDoubleNotify::ThreadBFunc, std::ref(*this)) {
+  }
+
+  ~TestDoubleNotify() {
+    THREAD_SAFE_PRINT("destructor.");
+    thread_b_.join();
+  }
+
+  int operator()(int argc, char *argv[]) {
+    sleep(1);
+    PostCondition();
+    THREAD_SAFE_PRINT("notify once");
+    sleep(4);
+    PostCondition();
+    THREAD_SAFE_PRINT("notify twice");
+    return 0;
+  }
+
+  void PostCondition() {
+    std::lock_guard<std::mutex> lk(mutex_);
+    condition_.notify_one();
+  }
+
+  void WaitForCondition() {
+    std::unique_lock<std::mutex> lk(mutex_);
+    condition_.wait(lk);
+  }
+
+  void ThreadBFunc() {
+    THREAD_SAFE_PRINT("before wait");
+    WaitForCondition();
+    THREAD_SAFE_PRINT("after wait 1");
+    WaitForCondition();
+    THREAD_SAFE_PRINT("after wait 2");
+  }
+
+ private:
+  std::mutex mutex_;
+  std::thread thread_b_;
+  std::condition_variable condition_;
+};
 
 int main(int argc, char *argv[]) {
-    return TestTimerWake(argc, argv);
+  TestDoubleNotify testObj;
+  return testObj(argc, argv);
 }
