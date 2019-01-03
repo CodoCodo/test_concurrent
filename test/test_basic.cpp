@@ -2,6 +2,8 @@
 #include <list>
 #include <string>
 #include <algorithm>
+#include <memory>
+#include "person.h"
 
 using namespace std;
 
@@ -26,7 +28,19 @@ static int test_partition(int argc, char *argv[]) {
   return 0;
 }
 
+static std::shared_ptr<Person> GetNewPerson() {
+  std::shared_ptr<Person> p_person(new Person);
+  return p_person;
+}
+
+static int test_reference(int argc, char *argv[]) {
+  std::shared_ptr<Person> person = GetNewPerson();
+  std::cout << "going to end" << std::endl;
+  std::cout << *person << std::endl;
+  return 0;
+}
+
 int main(int argc, char *argv[]) {
-  return test_partition(argc, argv);
+  return test_reference(argc, argv);
 }
 
