@@ -1,8 +1,10 @@
 #include <iostream>
+#include <sstream>
 #include <list>
 #include <string>
 #include <algorithm>
 #include <memory>
+#include "dms_run_key.h"
 #include "person.h"
 
 using namespace std;
@@ -33,6 +35,14 @@ static std::shared_ptr<Person> GetNewPerson() {
   return p_person;
 }
 
+static int test_string(int argc, char *argv[]) {
+  ostringstream oss;
+  oss << "hello" << endl;
+  oss << "world" << endl;
+  cout << oss.str() << endl;
+  return 0;
+}
+
 static int test_reference(int argc, char *argv[]) {
   std::shared_ptr<Person> person = GetNewPerson();
   std::cout << "going to end" << std::endl;
@@ -40,7 +50,14 @@ static int test_reference(int argc, char *argv[]) {
   return 0;
 }
 
+static int test_suffix(int argc, char *argv[]) {
+  std::string file_name = "parameters/cnn_models/caffe/face_id/hcnet32/hcnet32_nobn_noslash_0911.caffemodel";
+  std::string suffix_str = file_name.substr(file_name.find_last_of('.') + 1);
+  std::cout << suffix_str << std::endl;
+  return 0;
+}
+
 int main(int argc, char *argv[]) {
-  return test_reference(argc, argv);
+  return DmsRunKey::Test(argc, argv);
 }
 
