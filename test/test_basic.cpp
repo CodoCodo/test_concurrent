@@ -57,7 +57,15 @@ static int test_suffix(int argc, char *argv[]) {
   return 0;
 }
 
+static int test_shared_ptr(int argc, char *argv[]) {
+  std::shared_ptr<Person> p_person(std::make_shared<Person>("tdj", "0015", 30));
+  std::shared_ptr<Person> p_that_person;
+  p_that_person = p_person;
+  std::cout << p_that_person->mName << std::endl;
+  return 0;
+}
+
 int main(int argc, char *argv[]) {
-  return DmsRunKey::Test(argc, argv);
+  return test_shared_ptr(argc, argv);
 }
 
