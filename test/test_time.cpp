@@ -4,63 +4,45 @@
 #include <string>
 #include <chrono>
 #include <thread>
-#include <map>
-#include <set>
-#include "person.h"
+#include <ctime>
 
-struct Hello {
-  uint8_t a;
-  uint8_t b;
-  uint8_t c;
-
-  static const int id = 0x778;
-}__attribute__((packed));
-
-#if 0
-
-using namespace std;
-
-int test_set() {
-    set<string> mySet;
-    mySet.insert("caocao");
-    mySet.insert("dianwei");
-    mySet.insert("guojia");
-    
-    auto iter = mySet.find("caocao");
-    cout << "caocao is " << (iter != mySet.end()) << endl;
-
-    iter = mySet.find("guanyu");
-    cout << "guanyu is " << (iter != mySet.end()) << endl;
+// 测试时间点
+int TestTimePoint(int argc, char *argv[]) {
+  auto t1 = std::chrono::steady_clock::now();
+  std::chrono::milliseconds d1(1200);
+  auto t2 = t1 + d1;
+  std::cout << t1.time_since_epoch().count() << std::endl;
+  std::cout << t2.time_since_epoch().count() << std::endl;
+  return 0;
 }
 
-int test_map() {
-    map<string, int> myTable;
-    myTable["liubei"] = 1;
-    myTable["guanyu"] = 2;
-    myTable["zhangfei"] = 3;
-    myTable.erase(myTable.find("guanyu"));
+// 测试原生时间类型的单位转换
+int TestDuration(int argc, char *argv[]) {
+  std::chrono::milliseconds d1(1800);
+  d1*=2;
+  std::cout << d1.count() << std::endl;
+  std::cout << std::chrono::milliseconds::period::num << std::endl;
+  std::cout << std::chrono::milliseconds::period::den << std::endl;
 
-    return 0;
+  auto s_d1 = std::chrono::duration_cast<std::chrono::seconds>(d1);
+  std::cout << s_d1.count() << std::endl;
+  return 0;
 }
 
-int test_chrono(int argc, char *argv[]) {
-    std::chrono::milliseconds ms(5802);
-    std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(ms);
 
-    cout << "before sleep " << endl;
-    std::this_thread::sleep_for(s);
-    cout << "after sleep " << endl;
-    return 0;
+// 测试自定义时间段单位转换
+int TestUserDefDuration(int argc, char *argv[]) {
+  typedef std::chrono::duration<double> seconds_type;
+  typedef std::chrono::duration<double,std::milli> milliseconds_type;
+  typedef std::chrono::duration<double,std::ratio<60*60>> hours_type;
+
+  milliseconds_type d1(1500);
+  seconds_type s_d1(std::chrono::duration_cast<seconds_type>(d1));
+
+  std::cout << s_d1.count() << std::endl;
+  return 0;
 }
-
-#endif
-
-#include <vector>
-
 
 int main(int argc, char *argv[]) {
-    struct Hello tmpHello;
-    std::cout << sizeof(tmpHello) << std::endl;
-    return 0;
+  return TestTimePoint(argc, argv);
 }
-
