@@ -17,3 +17,6 @@ TARGET_LINK_LIBRARIES(test_basic ${TEST_DEP_LIBS})
 
 ADD_EXECUTABLE(test_md5 test_md5.cpp)
 TARGET_LINK_LIBRARIES(test_md5 ${TEST_DEP_LIBS})
+
+ADD_EXECUTABLE(test_non_overlay_section test_non_overlay_section.cpp)
+TARGET_LINK_LIBRARIES(test_non_overlay_section ${TEST_DEP_LIBS})
